@@ -1,0 +1,50 @@
+<!doctype html>
+<body>
+	<head>
+		<title>nacl.js test page</title>
+		<!-- <script src="js/nacl.js"></script> -->
+		<script src="js/crypto/curve25519.js"></script>
+		<!-- <script src="js/crypto/curve25519xsalsa20poly1305.js"></script>
+		<script src="js/crypto/hsalsa20.js"></script>
+		<script src="js/crypto/poly1305.js"></script>
+		<script src="js/crypto/salsa20.js"></script>
+		<script src="js/crypto/verify_16.js"></script>
+		<script src="js/crypto/xsalsa20.js"></script>
+		<script src="js/crypto/xsalsa20poly1305.js"></script> -->
+		<script>
+		throw "test";
+			/*
+			var bytes = stringToBytes("expand 32-byte k");
+			console.log(bytes);
+			*/
+			
+			var privateKey = "176970653848be5242059e2308dfa30245b93a13befd2ebd09f09b971273b728";
+			var publicKey = "0cba66066896ffb51e92bc3c36ffa627c2493770d9b0b4368a2466c801b0184e";
+			var nonce = new Array(24);
+			
+			var nacl = new NaCl(privateKey, publicKey);
+			
+			var original = stringToBytes("HELLO!");
+			var encrypted = nacl.encrypt(original, nonce);
+			var decrypted = nacl.decrypt(encrypted, nonce);
+			
+			console.log("in: " + bytesToString(original));
+			console.log("enc: " + bytesToHex(encrypted));
+			console.log("dec: " + bytesToString(decrypted));
+			
+			function bytesToHex(bytes) {
+				var hexDigits = "0123456789ABCDEF";
+				var str = "";
+				
+				for (var i = 0; i < bytes.length; i ++) {
+					var byte = bytes[i];
+					str += hexDigits[byte >> 4] + hexDigits[byte & 15] + "  ";
+				}
+				
+				return str;
+			}
+		</script>
+	</head>
+	
+	<body></body>
+</body>
