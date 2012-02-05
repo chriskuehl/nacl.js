@@ -75,9 +75,9 @@ curve25519.freeze = function(a, aoffset)
 	for (var j = 0; j < 32; ++j)
 		aorig[j] = a[aoffset + j];
 	
-	var minuspp = minusp;
+	var minuspp = this.minusp;
 	
-	add(a, 0, a, 0, minuspp, 0);
+	this.add(a, 0, a, 0, minuspp, 0);
 	
 	var negative = parseInt(-((a[aoffset + 31] >>> 7) & 1));
 	
@@ -102,7 +102,7 @@ curve25519.mult = function(outv, outvoffset, a, aoffset, b, boffset)
 		outv[outvoffset + i] = u;
 	}
 	
-	squeeze(outv, outvoffset);
+	this.squeeze(outv, outvoffset);
 };
 
 curve25519.mult121665 = function(outv, a)
@@ -157,7 +157,7 @@ curve25519.square = function(outv, outvoffset, a, aoffset)
 		outv[outvoffset + i] = u;
 	}
 	
-	squeeze(outv, outvoffset);
+	this.squeeze(outv, outvoffset);
 };
 
 curve25519.select = function(p, q, r, s, b)
@@ -210,28 +210,28 @@ curve25519.mainloop = function(work, e)
 
 	for (var pos = 254; pos >= 0; --pos)
 	{
-		var b = (parseInt((e[pos / 8] & 0xFF) >>> (pos & 7)));
+		var b = (parseInt((e[parseInt(pos / 8)] & 0xFF) >>> (pos & 7)));
 		b &= 1;
-		select(xzmb, xzm1b, xzm, xzm1, b);
-		add(a0, 	0,	xzmb, 	0,	xzmbp,	32);
-		sub(a0p,	32,	xzmb, 	0,	xzmbp, 	32);
-		add(a1, 	0,	xzm1b, 	0,	xzm1bp,	32);
-		sub(a1p,	32,	xzm1b, 	0,	xzm1bp, 32);
-		square(b0p,	0,	a0p,	0);
-		square(b0p, 32,	a0p,	32);
-		mult(b1p,	0,	a1p,	0, 	a0p,	32);
-		mult(b1p,	32,	a1p,	32,	a0p,	0);
-		add(c1, 	0,	b1, 	0,	b1p,	32);
-		sub(c1p,	32,	b1,		0,	b1p,	32);
-		square(rp,	0,	c1p,	32);
-		sub(sp,		0,	b0,		0,	b0p,	32);
-		mult121665(t, s);
-		add(u, 		0,	t, 		0,	b0p,	0);
-		mult(xznbp,	0,	b0p,	0,	b0p,	32);
-		mult(xznbp,	32, sp,		0,	up,		0);
-		square(xzn1bp, 0, c1p,	0);
-		mult(xzn1bp, 32, rp, 	0, 	workp, 	0);
-		select(xzm, xzm1, xznb, xzn1b, b);
+		this.select(xzmb, xzm1b, xzm, xzm1, b);
+		this.add(a0, 	0,	xzmb, 	0,	xzmbp,	32);
+		this.sub(a0p,	32,	xzmb, 	0,	xzmbp, 	32);
+		this.add(a1, 	0,	xzm1b, 	0,	xzm1bp,	32);
+		this.sub(a1p,	32,	xzm1b, 	0,	xzm1bp, 32);
+		this.square(b0p,	0,	a0p,	0);
+		this.square(b0p, 32,	a0p,	32);
+		this.mult(b1p,	0,	a1p,	0, 	a0p,	32);
+		this.mult(b1p,	32,	a1p,	32,	a0p,	0);
+		this.add(c1, 	0,	b1, 	0,	b1p,	32);
+		this.sub(c1p,	32,	b1,		0,	b1p,	32);
+		this.square(rp,	0,	c1p,	32);
+		this.sub(sp,		0,	b0,		0,	b0p,	32);
+		this.mult121665(t, s);
+		this.add(u, 		0,	t, 		0,	b0p,	0);
+		this.mult(xznbp,	0,	b0p,	0,	b0p,	32);
+		this.mult(xznbp,	32, sp,		0,	up,		0);
+		this.square(xzn1bp, 0, c1p,	0);
+		this.mult(xzn1bp, 32, rp, 	0, 	workp, 	0);
+		this.select(xzm, xzm1, xznb, xzn1b, b);
 	}
 
 	for (var j = 0; j < 64; ++j)
@@ -253,159 +253,160 @@ curve25519.recip = function(outv, outvoffset, z, zoffset)
 
 	/* 2 */
 	var z2p = z2;
-	square(z2p, 0, z, zoffset);
+	this.square(z2p, 0, z, zoffset);
 	
 	/* 4 */
-	square(t1, 0, z2, 0);
+	this.square(t1, 0, z2, 0);
 	
 	/* 8 */
-	square(t0, 0, t1, 0);
+	this.square(t0, 0, t1, 0);
 	
 	/* 9 */
 	var z9p = z9, t0p = t0;
-	mult(z9p, 0, t0p, 0, z, zoffset);
+	this.mult(z9p, 0, t0p, 0, z, zoffset);
 	
 	/* 11 */
-	mult(z11, 0, z9, 0, z2, 0);
+	this.mult(z11, 0, z9, 0, z2, 0);
 	
 	/* 22 */
-	square(t0, 0, z11, 0);
+	this.square(t0, 0, z11, 0);
 	
 	/* 2^5 - 2^0 = 31 */
-	mult(z2_5_0, 0, t0, 0, z9, 0);
+	this.mult(z2_5_0, 0, t0, 0, z9, 0);
 
 	/* 2^6 - 2^1 */
-	square(t0, 0, z2_5_0, 0);
+	this.square(t0, 0, z2_5_0, 0);
 	
 	/* 2^7 - 2^2 */
-	square(t1, 0, t0, 0);
+	this.square(t1, 0, t0, 0);
 	
 	/* 2^8 - 2^3 */
-	square(t0, 0, t1, 0);
+	this.square(t0, 0, t1, 0);
 	
 	/* 2^9 - 2^4 */
-	square(t1, 0, t0, 0);
+	this.square(t1, 0, t0, 0);
 	
 	/* 2^10 - 2^5 */
-	square(t0, 0, t1, 0);
+	this.square(t0, 0, t1, 0);
 	
 	/* 2^10 - 2^0 */
-	mult(z2_10_0, 0, t0, 0, z2_5_0, 0);
+	this.mult(z2_10_0, 0, t0, 0, z2_5_0, 0);
 
 	/* 2^11 - 2^1 */
-	square(t0, 0, z2_10_0, 0);
+	this.square(t0, 0, z2_10_0, 0);
 	
 	/* 2^12 - 2^2 */
-	square(t1, 0, t0, 0);
+	this.square(t1, 0, t0, 0);
 	
 	/* 2^20 - 2^10 */
 	for (var i = 2; i < 10; i += 2)
 	{ 
-		square(t0, 0, t1, 0);
-		square(t1, 0, t0, 0);
+		this.square(t0, 0, t1, 0);
+		this.square(t1, 0, t0, 0);
 	}
 	
 	/* 2^20 - 2^0 */
-	mult(z2_20_0, 0, t1, 0, z2_10_0, 0);
+	this.mult(z2_20_0, 0, t1, 0, z2_10_0, 0);
 
 	/* 2^21 - 2^1 */
-	square(t0, 0, z2_20_0, 0);
+	this.square(t0, 0, z2_20_0, 0);
 	
 	/* 2^22 - 2^2 */
-	square(t1, 0, t0, 0);
+	this.square(t1, 0, t0, 0);
 	
 	/* 2^40 - 2^20 */
 	for (var i = 2; i < 20; i += 2) 
 	{ 
-		square(t0, 0, t1, 0); 
-		square(t1, 0, t0, 0); 
+		this.square(t0, 0, t1, 0); 
+		this.square(t1, 0, t0, 0); 
 	}
 	
 	/* 2^40 - 2^0 */
-	mult(t0, 0, t1, 0, z2_20_0, 0);
+	this.mult(t0, 0, t1, 0, z2_20_0, 0);
 
 	/* 2^41 - 2^1 */
-	square(t1, 0, t0, 0);
+	this.square(t1, 0, t0, 0);
 	
 	/* 2^42 - 2^2 */
-	square(t0, 0, t1, 0);
+	this.square(t0, 0, t1, 0);
 	
 	/* 2^50 - 2^10 */
 	for (var i = 2; i < 10; i += 2) 
 	{ 
-		square(t1, 0, t0, 0); 
-		square(t0, 0, t1, 0); 
+		this.square(t1, 0, t0, 0); 
+		this.square(t0, 0, t1, 0); 
 	}
 	
 	/* 2^50 - 2^0 */
-	mult(z2_50_0, 0, t0, 0, z2_10_0, 0);
+	this.mult(z2_50_0, 0, t0, 0, z2_10_0, 0);
 
 	/* 2^51 - 2^1 */
-	square(t0, 0, z2_50_0, 0);
+	this.square(t0, 0, z2_50_0, 0);
 	
 	/* 2^52 - 2^2 */
-	square(t1, 0, t0, 0);
+	this.square(t1, 0, t0, 0);
 	
 	/* 2^100 - 2^50 */
 	for (var i = 2; i < 50; i += 2)
 	{ 
-		square(t0, 0, t1, 0); 
-		square(t1, 0, t0, 0); 
+		this.square(t0, 0, t1, 0); 
+		this.square(t1, 0, t0, 0); 
 	}
 	
 	/* 2^100 - 2^0 */
-	mult(z2_100_0, 0, t1, 0, z2_50_0, 0);
+	this.mult(z2_100_0, 0, t1, 0, z2_50_0, 0);
 
 	/* 2^101 - 2^1 */
-	square(t1, 0, z2_100_0, 0);
+	this.square(t1, 0, z2_100_0, 0);
 	
 	/* 2^102 - 2^2 */
-	square(t0, 0, t1, 0);
+	this.square(t0, 0, t1, 0);
 	
 	/* 2^200 - 2^100 */
 	for (var i = 2; i < 100; i += 2)
 	{
-		square(t1, 0, t0, 0);
-		square(t0, 0, t1, 0);
+		this.square(t1, 0, t0, 0);
+		this.square(t0, 0, t1, 0);
 	}
 	
 	/* 2^200 - 2^0 */
-	mult(t1, 0, t0, 0, z2_100_0, 0);
+	this.mult(t1, 0, t0, 0, z2_100_0, 0);
 
 	/* 2^201 - 2^1 */
-	square(t0, 0, t1, 0);
+	this.square(t0, 0, t1, 0);
 	
 	/* 2^202 - 2^2 */
-	square(t1, 0, t0, 0);
+	this.square(t1, 0, t0, 0);
 	
 	/* 2^250 - 2^50 */
 	for (var i = 2; i < 50; i += 2)
 	{
-		square(t0, 0, t1, 0);
-		square(t1, 0, t0, 0);
+		this.square(t0, 0, t1, 0);
+		this.square(t1, 0, t0, 0);
 	}
 	
 	/* 2^250 - 2^0 */
-	mult(t0, 0, t1, 0, z2_50_0, 0);
+	this.mult(t0, 0, t1, 0, z2_50_0, 0);
 
 	/* 2^251 - 2^1 */
-	square(t1, 0, t0, 0);
+	this.square(t1, 0, t0, 0);
 	
 	/* 2^252 - 2^2 */
-	square(t0, 0, t1, 0);
+	this.square(t0, 0, t1, 0);
 	
 	/* 2^253 - 2^3 */
-	square(t1, 0, t0, 0);
+	this.square(t1, 0, t0, 0);
 	
 	/* 2^254 - 2^4 */
-	square(t0, 0, t1, 0);
+	this.square(t0, 0, t1, 0);
 	
 	/* 2^255 - 2^5 */
-	square(t1, 0, t0, 0);
+	this.square(t1, 0, t0, 0);
 	
 	/* 2^255 - 21 */
 	var t1p = t1, z11p = z11;
-	mult(outv, outvoffset, t1p, 0, z11p, 0);
+	
+	this.mult(outv, outvoffset, t1p, 0, z11p, 0);
 };
 
 curve25519.crypto_scalarmult = function(q, n, p)
@@ -423,14 +424,14 @@ curve25519.crypto_scalarmult = function(q, n, p)
 	for (var i = 0; i < 32; ++i)
 		work[i] = p[i] & 0xFF;
 	
-	mainloop(work, e);
+	this.mainloop(work, e);
 	
-	recip(work, 32, work, 32);
-	mult(work, 64, work, 0, work, 32);		
-	freeze(work, 64);
+	this.recip(work, 32, work, 32);
+	this.mult(work, 64, work, 0, work, 32);		
+	this.freeze(work, 64);
 	
 	for (var i = 0; i < 32; ++i)
-		q[i] = /* (byte) */work[64 + i];
+		q[i] = toByte(work[64 + i]);
 	
 	return 0;
 };
